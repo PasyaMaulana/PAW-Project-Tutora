@@ -139,6 +139,30 @@ Setiap request HTTP yang masuk akan otomatis:
 
 ---
 
+## 📸 Tangkapan Layar & Bukti Pengujian
+
+### 1. Tampilan Frontend Aplikasi (EJS & Tailwind CSS)
+
+#### A. Halaman Utama (Hero Section & Status Server Live)
+<img width="1919" height="910" alt="image" src="https://github.com/user-attachments/assets/0155bb06-ade7-4bdd-945d-ce4c8c90de9e" />
+
+
+#### B. Katalog Topik Pembelajaran Adaptif
+<img width="1919" height="910" alt="image" src="https://github.com/user-attachments/assets/a584d1ee-ff44-4585-b083-e229ed15d55f" />
+
+
+### 2. Bukti Pengujian Endpoint via Postman
+
+#### A. Pengujian `GET /api/status`
+<img width="1919" height="1035" alt="image" src="https://github.com/user-attachments/assets/22973f6d-81a4-421b-8ff7-81c91022ace0" />
+
+
+#### B. Pengujian `GET /api/produk`
+<img width="1919" height="1034" alt="image" src="https://github.com/user-attachments/assets/f5d0e7b3-c677-4a7c-b67c-b3fe9e7c0430" />
+
+
+---
+
 ## 👥 Tim Pengembang (Kelompok 4)
 - Abi Nayana Faiq (20240140036)
 - Marchdilo Kemal Hakim (20240140041)
