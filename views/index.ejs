@@ -1,0 +1,256 @@
+<%- include('partials/head', { judul: judul }) %>
+
+  <!-- Navbar -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+      <!-- Logo Aplikasi Tutora (Tampil Lebih Besar & Jelas) -->
+      <a href="/" class="flex items-center group py-2">
+        <img src="/images/tutora-logo.png" alt="Tutora Logo" class="h-12 md:h-14 w-auto object-contain transition-transform duration-200 group-hover:scale-105">
+      </a>
+
+      <!-- Menu Navigasi dengan Iconify -->
+      <nav class="flex items-center gap-6 text-sm font-semibold text-slate-600">
+        <a href="#katalog" class="hover:text-brand-600 transition flex items-center gap-1.5">
+          <iconify-icon icon="lucide:book-open" width="16" height="16"></iconify-icon>
+          <span>Katalog Topik</span>
+        </a>
+        <a href="/api/produk" target="_blank" class="hover:text-brand-600 transition flex items-center gap-1.5">
+          <iconify-icon icon="lucide:code-2" width="16" height="16"></iconify-icon>
+          <span>API Topik</span>
+          <span class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-mono border border-slate-200">JSON</span>
+        </a>
+        <a href="/api/status" target="_blank" class="hover:text-brand-600 transition flex items-center gap-1.5">
+          <iconify-icon icon="lucide:activity" width="16" height="16" class="text-emerald-500"></iconify-icon>
+          <span>API Status</span>
+          <span class="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded font-mono border border-emerald-200">Live</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1">
+    <!-- Hero Section -->
+    <section class="max-w-6xl mx-auto px-6 pt-12 pb-16 grid lg:grid-cols-12 gap-10 items-center">
+      <div class="lg:col-span-7">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-800 text-xs font-semibold mb-5 shadow-sm">
+          <iconify-icon icon="lucide:sparkles" class="text-amber-500" width="15" height="15"></iconify-icon>
+          <span>Pembelajaran Adaptif Berbasis AI untuk Mahasiswa</span>
+        </div>
+        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
+          Pahami Materi Kuliah dengan <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-teal-600">Tutor Cerdas</span> yang Menyesuaikan Levelmu
+        </h1>
+        <p class="mt-5 text-slate-600 text-base sm:text-lg leading-relaxed max-w-xl">
+          Bimbingan belajar mandiri di luar jam kelas. Pilih topik materi dan tentukan tingkat pemahaman Anda sendiri (<span class="font-medium text-slate-800">Pemula, Menengah, atau Lanjut</span>) untuk memperoleh penjelasan yang bertahap, analogi konkret, dan latihan berpikir aktif.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <a href="#katalog" class="px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-sm transition hover:shadow-md flex items-center gap-2">
+            <iconify-icon icon="lucide:layers" width="16" height="16"></iconify-icon>
+            <span>Jelajahi Topik Belajar</span>
+          </a>
+          <a href="/api/status" target="_blank" class="px-6 py-3 rounded-xl bg-white border border-slate-300 hover:border-slate-400 text-slate-700 font-semibold text-sm transition flex items-center gap-2">
+            <iconify-icon icon="lucide:terminal" width="16" height="16" class="text-slate-500"></iconify-icon>
+            <span>Periksa Status Server</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Live Terminal / Endpoint Status Box -->
+      <div class="lg:col-span-5">
+        <div class="bg-slate-900 text-slate-100 rounded-2xl p-5 shadow-xl border border-slate-800">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800 text-xs">
+            <div class="flex items-center gap-2 font-mono">
+              <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold">GET</span>
+              <span class="text-slate-300">/api/status</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="status-indicator" class="h-2.5 w-2.5 rounded-full bg-slate-500"></span>
+              <span id="status-text" class="text-slate-400 font-mono text-[11px]">Memeriksa backend...</span>
+            </div>
+          </div>
+          <pre id="status-response" class="font-mono text-xs text-emerald-300 whitespace-pre-wrap overflow-x-auto min-h-[140px] max-h-[220px]">Memuat status dari backend...</pre>
+          <div class="mt-3 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+            <span>Uptime: <span id="uptime-val" class="text-slate-200">-</span></span>
+            <button onclick="refreshStatus()" class="hover:text-emerald-400 transition underline cursor-pointer flex items-center gap-1">
+              <iconify-icon icon="lucide:refresh-cw" width="12" height="12"></iconify-icon>
+              <span>Segarkan</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Fitur Pembelajaran Adaptif (Tampilan Bersih & Rapi) -->
+    <section class="border-y border-slate-200/80 bg-white py-12">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-8">
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-600 flex items-center justify-center gap-1.5 mb-1.5">
+            <iconify-icon icon="lucide:check-circle-2" width="14" height="14"></iconify-icon>
+            Fitur Unggulan Tutora
+          </span>
+          <h2 class="text-2xl font-bold text-slate-900">Mendorong Mahasiswa Berpikir Aktif & Mandiri</h2>
+        </div>
+        <div class="grid md:grid-cols-4 gap-5">
+          <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-brand-300 transition">
+            <div class="h-10 w-10 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center mb-3">
+              <iconify-icon icon="lucide:sliders-horizontal" width="20" height="20"></iconify-icon>
+            </div>
+            <h3 class="font-bold text-slate-900 text-sm">Pilihan Tingkat Pemahaman</h3>
+            <p class="mt-1.5 text-xs text-slate-600 leading-relaxed">Bebas tentukan pemahaman Anda: Pemula, Menengah, atau Lanjut sesuai kesiapan.</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-brand-300 transition">
+            <div class="h-10 w-10 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center mb-3">
+              <iconify-icon icon="lucide:message-square-code" width="20" height="20"></iconify-icon>
+            </div>
+            <h3 class="font-bold text-slate-900 text-sm">Tutor AI Adaptif</h3>
+            <p class="mt-1.5 text-xs text-slate-600 leading-relaxed">Tanya materi tanpa ragu di luar jam kuliah dengan respon cepat, ramah, dan terstruktur.</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-brand-300 transition">
+            <div class="h-10 w-10 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center mb-3">
+              <iconify-icon icon="lucide:clipboard-check" width="20" height="20"></iconify-icon>
+            </div>
+            <h3 class="font-bold text-slate-900 text-sm">Mode Uji Pemahaman</h3>
+            <p class="mt-1.5 text-xs text-slate-600 leading-relaxed">Pertanyaan evaluatif singkat setelah sesi belajar untuk menguji konsep yang baru dipelajari.</p>
+          </div>
+          <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-brand-300 transition">
+            <div class="h-10 w-10 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center mb-3">
+              <iconify-icon icon="lucide:help-circle" width="20" height="20"></iconify-icon>
+            </div>
+            <h3 class="font-bold text-slate-900 text-sm">Bantuan & Contoh Konkret</h3>
+            <p class="mt-1.5 text-xs text-slate-600 leading-relaxed">Tombol instan untuk meminta penjelasan yang lebih sederhana dan analogi contoh konkret.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Katalog Topik Pembelajaran dari Database PostgreSQL -->
+    <section id="katalog" class="max-w-6xl mx-auto px-6 py-16 scroll-mt-12">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+        <div>
+          <div class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-700 mb-1">
+            <iconify-icon icon="lucide:database" width="14" height="14"></iconify-icon>
+            <span>Database Terintegrasi PostgreSQL</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Katalog Topik Pembelajaran Adaptif</h2>
+          <p class="mt-1 text-slate-600 text-sm">
+            Topik pembelajaran diambil secara dinamis melalui model <code class="px-1.5 py-0.5 bg-slate-100 rounded text-brand-700 font-mono text-xs">models/produkModel.js</code>. Mahasiswa bebas memilih tingkat pemahaman yang diinginkan.
+          </p>
+        </div>
+        <div class="text-xs text-slate-500 font-medium bg-white px-3 py-1.5 rounded-lg border border-slate-200 shrink-0">
+          Total: <span class="font-bold text-slate-900"><%= produk.length %> Topik Tersedia</span>
+        </div>
+      </div>
+
+      <% if (dbError) { %>
+        <div class="mb-8 p-5 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800 text-sm shadow-sm">
+          <div class="flex items-center gap-2 font-bold text-amber-900">
+            <iconify-icon icon="lucide:alert-triangle" width="18" height="18"></iconify-icon>
+            <span>Pemberitahuan Database PostgreSQL:</span>
+          </div>
+          <p class="mt-1"><%= dbError %></p>
+          <div class="mt-3 p-3 bg-amber-100/60 rounded-xl font-mono text-xs">
+            Pastikan database sudah dibuat manual di pgAdmin/psql, lalu jalankan di terminal: <br>
+            <strong class="text-slate-900">npm run seed</strong>
+          </div>
+        </div>
+      <% } %>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% if (produk && produk.length > 0) { %>
+          <% produk.forEach(function(item) { %>
+            <div class="bg-white rounded-2xl border border-slate-200 hover:border-brand-500/60 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition group">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-4">
+                  <div class="h-10 w-10 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center group-hover:scale-110 transition">
+                    <iconify-icon icon="<%= item.icon || 'lucide:book-open' %>" width="22" height="22"></iconify-icon>
+                  </div>
+                  <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">
+                    <%= item.kategori %>
+                  </span>
+                </div>
+
+                <h3 class="font-bold text-slate-900 text-lg leading-snug">
+                  <%= item.nama %>
+                </h3>
+                <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+                  <%= item.deskripsi %>
+                </p>
+
+                <!-- Pilihan Tingkat Pemahaman Mandiri -->
+                <div class="mt-5 pt-4 border-t border-slate-100">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Pilih Tingkat Pemahaman:</span>
+                  <div class="grid grid-cols-3 gap-1.5" role="group">
+                    <label class="cursor-pointer">
+                      <input type="radio" name="level_<%= item.id %>" value="Pemula" class="peer sr-only" checked>
+                      <span class="block text-center text-xs py-1.5 px-1 rounded-lg border border-slate-200 font-medium text-slate-600 peer-checked:bg-brand-50 peer-checked:border-brand-500 peer-checked:text-brand-800 transition">
+                        Pemula
+                      </span>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="level_<%= item.id %>" value="Menengah" class="peer sr-only">
+                      <span class="block text-center text-xs py-1.5 px-1 rounded-lg border border-slate-200 font-medium text-slate-600 peer-checked:bg-brand-50 peer-checked:border-brand-500 peer-checked:text-brand-800 transition">
+                        Menengah
+                      </span>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="level_<%= item.id %>" value="Lanjut" class="peer sr-only">
+                      <span class="block text-center text-xs py-1.5 px-1 rounded-lg border border-slate-200 font-medium text-slate-600 peer-checked:bg-brand-50 peer-checked:border-brand-500 peer-checked:text-brand-800 transition">
+                        Lanjut
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tombol Aksi Sesi Belajar -->
+              <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                <button onclick="alert('Sesi bimbingan untuk topik: <%= item.nama %> akan dimulai!')" class="flex-1 py-2 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs shadow-sm transition flex items-center justify-center gap-1.5">
+                  <iconify-icon icon="lucide:play" width="14" height="14"></iconify-icon>
+                  <span>Mulai Bimbingan</span>
+                </button>
+                <a href="/api/produk" target="_blank" title="Lihat JSON API" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+                  <iconify-icon icon="lucide:code-2" width="16" height="16"></iconify-icon>
+                </a>
+              </div>
+            </div>
+          <% }); %>
+        <% } else if (!dbError) { %>
+          <div class="col-span-full py-12 text-center text-slate-500">
+            <p class="text-base font-medium">Belum ada topik yang terdaftar.</p>
+            <p class="text-xs mt-1">Jalankan <code class="font-mono bg-slate-100 px-1 py-0.5 rounded">npm run seed</code> untuk mengisi data awal.</p>
+          </div>
+        <% } %>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    async function refreshStatus() {
+      const indicator = document.getElementById('status-indicator');
+      const text = document.getElementById('status-text');
+      const responseBox = document.getElementById('status-response');
+      const uptimeVal = document.getElementById('uptime-val');
+
+      try {
+        text.textContent = 'Menghubungi API...';
+        indicator.className = 'h-2.5 w-2.5 rounded-full bg-amber-400 animate-pulse';
+
+        const res = await fetch('/api/status');
+        const data = await res.json();
+
+        responseBox.textContent = JSON.stringify(data, null, 2);
+        indicator.className = 'h-2.5 w-2.5 rounded-full bg-emerald-400';
+        text.textContent = 'Server Online & Siap';
+        
+        const uptime = data.uptime !== undefined ? data.uptime : data.uptimeDetik;
+        uptimeVal.textContent = uptime + ' seconds';
+      } catch (err) {
+        responseBox.textContent = 'Gagal menghubungi /api/status. Pastikan aplikasi Express sudah berjalan di port yang benar.';
+        indicator.className = 'h-2.5 w-2.5 rounded-full bg-rose-500';
+        text.textContent = 'Gagal Terhubung';
+      }
+    }
+
+    refreshStatus();
+  </script>
+
+<%- include('partials/footer') %>
