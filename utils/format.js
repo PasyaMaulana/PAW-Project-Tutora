@@ -1,26 +1,16 @@
 /**
- * Fungsi pembantu untuk memformat angka menjadi format mata uang Rupiah
- * @param {number} nominal
- * @returns {string} Contoh: "Rp 45.000"
+ * Kumpulan fungsi bantuan (helper) yang dipakai ulang di controller & view.
  */
-function formatRupiah(nominal) {
-  if (nominal === 0 || nominal === null || nominal === undefined) {
-    return 'Gratis';
-  }
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(nominal);
-}
+
+const DEFAULT_LEVELS = ['Pemula', 'Menengah', 'Lanjut'];
 
 /**
- * Fungsi pembantu untuk memformat tanggal ke format lokal Indonesia
+ * Memformat tanggal ke format lokal Indonesia (WIB)
  * @param {Date|string} date
- * @returns {string} Contoh: "3 November 2026, 23.50 WIB"
+ * @returns {string} Contoh: "10 Nov 2026, 22.50"
  */
 function formatTanggal(date) {
+  if (!date) return '-';
   return new Date(date).toLocaleString('id-ID', {
     timeZone: 'Asia/Jakarta',
     dateStyle: 'medium',
@@ -28,8 +18,32 @@ function formatTanggal(date) {
   });
 }
 
-module.exports = {
-  formatRupiah,
-  formatTanggal,
-};
+/**
+ * Menormalkan input tingkat pemahaman menjadi array.
+ * Menerima array (dari checkbox form / JSON body) atau string "Pemula, Menengah".
+ * @param {string|string[]|undefined} levels
+ * @returns {string[]|undefined} undefined jika input kosong
+ */
+function parseLevels(levels) {
+  if (Array.isArray(levels)) return levels.map((l) => String(l).trim()).filter(Boolean);
+  if (typeof levels === 'string') return levels.split(',').map((l) => l.trim()).filter(Boolean);
+  return undefined;
+}
 
+/**
+ * Memvalidasi ID agar berupa bilangan bulat positif.
+ * Mencegah error database ketika ID tidak valid (misal: /api/topics/abc).
+ * @param {string|number} id
+ * @returns {number|null}
+ */
+function parseId(id) {
+  const angka = Number(id);
+  return Number.isInteger(angka) && angka > 0 ? angka : null;
+}
+
+module.exports = {
+  DEFAULT_LEVELS,
+  formatTanggal,
+  parseLevels,
+  parseId,
+};
