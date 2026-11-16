@@ -1,46 +1,55 @@
 # PAW-Project-Tutora (Tutora)
+> Perancangan Aplikasi Web Pembelajaran Adaptif Berbasis Artificial Intelligence untuk Mahasiswa
 
-Implementasi Arsitektur **Model-View-Controller (MVC)** menggunakan **Node.js**, **Express.js**, **EJS**, **Tailwind CSS**, dan **PostgreSQL (Sequelize)**.
+Tugas Proyek Berkelanjutan — Mata Kuliah Pengembangan Aplikasi Web (PAW)  
+Implementasi Arsitektur **Model-View-Controller (MVC)** menggunakan **Node.js**, **Express.js**, **EJS**, **Tailwind CSS**, dan **PostgreSQL (Sequelize)** dengan fitur **REST API CRUD** dan antarmuka manajemen data interaktif.
 
 ---
 
 ## 📁 Struktur Folder
 
-Sesuai ketentuan penugasan Week 7:
+Sesuai ketentuan standar MVC penugasan:
 
 ```text
 PAW-Project-Tutora/
 ├── config/
-│   ├── index.js          # Konfigurasi aplikasi & port
-│   └── database.js       # Konfigurasi koneksi PostgreSQL (Sequelize)
+│   ├── index.js             # Konfigurasi aplikasi & port
+│   └── database.js          # Konfigurasi koneksi PostgreSQL (Sequelize)
 ├── controllers/
-│   ├── apiController.js  # Mengatur endpoint /api/status dan /api/produk
-│   └── homeController.js # Mengatur rendering halaman frontend EJS
+│   ├── apiController.js     # Controller REST API CRUD (/api/topics & /api/status)
+│   └── topicController.js   # Controller antarmuka web CRUD frontend EJS
 ├── logs/
 │   ├── .gitkeep
-│   └── logger.md         # Catatan log request HTTP format Markdown
+│   └── logger.md            # Catatan riwayat request HTTP format Markdown
 ├── middlewares/
-│   └── logger.js         # Custom middleware logger (terminal & file markdown)
+│   └── logger.js            # Custom middleware logger (terminal console & markdown)
 ├── models/
-│   ├── index.js          # Inisialisasi Sequelize & model database
-│   └── produkModel.js    # Model data modul pembelajaran adaptif
+│   ├── index.js             # Inisialisasi Sequelize & ekspor model
+│   └── topicModel.js        # Model data topik pembelajaran & operasi database
 ├── routes/
-│   ├── api.js            # Routing endpoint API
-│   ├── web.js            # Routing halaman web utama
-│   └── index.js          # Agregator seluruh routing aplikasi
+│   ├── api.js               # Routing endpoint REST API CRUD
+│   ├── web.js               # Routing antarmuka web CRUD frontend
+│   └── index.js             # Agregator seluruh routing aplikasi
 ├── utils/
-│   ├── format.js         # Helper pemformat Rupiah dan tanggal
-│   └── seed.js           # Script seeding data modul awal ke database
+│   ├── format.js            # Helper: format tanggal WIB, parsing levels, validasi ID
+│   └── seed.js              # Script seeding data awal topik ke PostgreSQL
 ├── views/
 │   ├── partials/
-│   │   ├── head.ejs      # Tag head, font Google, Tailwind CSS CDN
-│   │   └── footer.ejs    # Komponen footer aplikasi
-│   └── index.ejs         # Tampilan antarmuka utama pengguna
-├── .env                  # Konfigurasi environment (DB, PORT)
-├── .env.example          # Contoh template konfigurasi
-├── .gitignore            # Berkas yang dikecualikan dari Git
-├── app.js                # Entry point utama aplikasi Express
-└── package.json          # Metadata & dependensi project
+│   │   ├── head.ejs         # Tag head, font Plus Jakarta Sans, Tailwind CDN & Iconify
+│   │   ├── alert.ejs        # Komponen notifikasi flash message (sukses/gagal)
+│   │   └── footer.ejs       # Komponen footer identitas kelompok
+│   ├── topics/
+│   │   ├── create.ejs       # Form antarmuka tambah topik baru (CREATE)
+│   │   └── edit.ejs         # Form antarmuka ubah topik & hapus (UPDATE & DELETE)
+│   └── index.ejs            # Tampilan utama: Hero, live status, & katalog topik (READ)
+├── public/
+│   └── images/
+│       └── tutora-logo.png  # Logo resmi aplikasi Tutora
+├── .env                     # Variabel environment koneksi database & port
+├── .env.example             # Template konfigurasi environment
+├── .gitignore               # Berkas yang dikecualikan dari Git
+├── app.js                   # Entry point utama Express server & DB sync
+└── package.json             # Metadata, scripts (start, dev, seed) & dependensi
 ```
 
 ---
@@ -67,7 +76,7 @@ DB_NAME=tutora_db
 ```
 
 ### 3. Isi Data Awal ke Database (Seeding)
-Jalankan perintah berikut untuk membuat tabel `produks` dan mengisi data modul pembelajaran adaptif:
+Jalankan perintah berikut untuk menyinkronkan tabel `topics` dan mengisi data modul pembelajaran awal ke PostgreSQL:
 ```bash
 npm run seed
 ```
@@ -84,35 +93,31 @@ Jalankan aplikasi dengan salah satu perintah berikut:
   npm start
   ```
 
-Buka browser dan akses:
-- **Frontend**: [http://localhost:3000](http://localhost:3000)
+Akses aplikasi melalui browser:
+- **Frontend Utama**: [http://localhost:3000](http://localhost:3000)
+- **Form Tambah Topik**: [http://localhost:3000/topics/create](http://localhost:3000/topics/create)
 - **API Status**: [http://localhost:3000/api/status](http://localhost:3000/api/status)
-- **API Produk**: [http://localhost:3000/api/produk](http://localhost:3000/api/produk)
+- **REST API Topics**: [http://localhost:3000/api/topics](http://localhost:3000/api/topics)
 
 ---
 
-## 📡 Endpoint API
+## 📡 Endpoint REST API (CRUD)
 
-### 1. `GET /api/status`
-Mengembalikan status server, uptime, dan kesiapan koneksi database.
-**Contoh Respons:**
-```json
-{
-  "status": "ok",
-  "app": "Tutora",
-  "version": "v1.0",
-  "serverTime": "2026-11-03T17:28:00.000Z",
-  "uptime": 15,
-  "database": {
-    "dialect": "postgresql",
-    "status": "connected"
-  }
-}
-```
+Backend menyediakan endpoint REST API lengkap yang terhubung langsung ke database PostgreSQL:
 
-### 2. `GET /api/produk`
-Mengembalikan daftar topik pembelajaran adaptif Tutora (Pure AI bimbingan belajar, tanpa harga & stok).
-**Contoh Respons:**
+| HTTP Method | Endpoint | Fungsi | Status Code |
+| :--- | :--- | :--- | :--- |
+| **GET** | `/api/status` | Mengecek uptime server & status koneksi database | 200 OK |
+| **GET** | `/api/topics` | Mengambil seluruh data topik dari database | 200 OK |
+| **GET** | `/api/topics/:id` | Mengambil detail 1 topik berdasarkan ID | 200 OK / 404 Not Found |
+| **POST** | `/api/topics` | Menambahkan topik baru ke database | 201 Created / 400 Bad Request |
+| **PUT** | `/api/topics/:id` | Memperbarui topik berdasarkan ID | 200 OK / 404 Not Found |
+| **DELETE** | `/api/topics/:id` | Menghapus topik berdasarkan ID dari database | 200 OK / 404 Not Found |
+
+### Contoh Request & Response REST API
+
+#### 1. `GET /api/topics` (Membaca Seluruh Data)
+**Response:**
 ```json
 {
   "success": true,
@@ -122,20 +127,94 @@ Mengembalikan daftar topik pembelajaran adaptif Tutora (Pure AI bimbingan belaja
       "id": 1,
       "nama": "Pengembangan Aplikasi Web (Express.js & MVC)",
       "kategori": "Web Development",
-      "deskripsi": "Bimbingan konsep arsitektur MVC, routing Express.js, custom middleware logger, dan view engine EJS.",
+      "deskripsi": "Bimbingan konsep arsitektur MVC, routing Express.js, REST API CRUD, middleware logger, dan view engine EJS.",
       "icon": "lucide:globe",
-      "levels": ["Pemula", "Menengah", "Lanjut"]
+      "levels": ["Pemula", "Menengah", "Lanjut"],
+      "createdAt": "2026-11-10T13:44:21.000Z",
+      "updatedAt": "2026-11-10T13:44:21.000Z"
     }
   ]
 }
 ```
 
+#### 2. `POST /api/topics` (Menambahkan Data Baru)
+**Headers:** `Content-Type: application/json`  
+**Request Body:**
+```json
+{
+  "nama": "Cloud Computing & DevOps",
+  "kategori": "Infrastructure",
+  "deskripsi": "Arsitektur cloud AWS/GCP, Docker containerization, Kubernetes, dan CI/CD pipeline.",
+  "icon": "lucide:cloud",
+  "levels": ["Pemula", "Menengah"]
+}
+```
+**Response (201 Created):**
+```json
+{
+  "success": true,
+  "message": "Data topik berhasil ditambahkan ke database",
+  "data": {
+    "id": 7,
+    "nama": "Cloud Computing & DevOps",
+    "kategori": "Infrastructure",
+    "deskripsi": "Arsitektur cloud AWS/GCP, Docker containerization, Kubernetes, dan CI/CD pipeline.",
+    "icon": "lucide:cloud",
+    "levels": ["Pemula", "Menengah"]
+  }
+}
+```
+
+#### 3. `PUT /api/topics/:id` (Memperbarui Data)
+**Request Body:**
+```json
+{
+  "nama": "Cloud Computing & Modern DevOps Architecture",
+  "deskripsi": "Diperbarui: Pembelajaran microservices, Docker, Kubernetes, dan automation testing."
+}
+```
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Data topik berhasil diperbarui di database",
+  "data": {
+    "id": 7,
+    "nama": "Cloud Computing & Modern DevOps Architecture",
+    "kategori": "Infrastructure",
+    "deskripsi": "Diperbarui: Pembelajaran microservices, Docker, Kubernetes, dan automation testing."
+  }
+}
+```
+
+#### 4. `DELETE /api/topics/:id` (Menghapus Data)
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Topik dengan ID 7 berhasil dihapus dari database"
+}
+```
+
+---
+
+## 🖥️ Antarmuka Web Frontend (CRUD)
+
+Pengguna dapat melakukan seluruh operasi data langsung melalui browser:
+
+| Operasi | Rute Web | Aksi di Frontend |
+| :--- | :--- | :--- |
+| **READ** | `GET /` | Menampilkan seluruh topik yang diambil langsung dari database PostgreSQL |
+| **CREATE** | `GET /topics/create` & `POST /topics` | Form penambahan topik baru dengan validasi dan notifikasi sukses |
+| **UPDATE** | `GET /topics/:id/edit` & `POST /topics/:id/update` | Form perubahan data topik yang telah terisi data lama |
+| **DELETE** | `POST /topics/:id/delete` | Tombol hapus pada kartu topik dilengkapi dialog konfirmasi browser |
+
 ---
 
 ## 📝 Middleware Logger
-Setiap request HTTP yang masuk akan otomatis:
-1. Ditampilkan langsung di terminal / console backend (Metode, Endpoint, Status Code, Durasi, IP, Timestamp).
-2. Dicatat rapi ke dalam tabel Markdown di file `logs/logger.md`.
+Middleware logger mencatat setiap request HTTP yang masuk ke server:
+1. **Console Terminal**: Menampilkan metode (GET, POST, PUT, DELETE), endpoint, status HTTP, durasi (ms), dan alamat IP.
+2. **File Log**: Dicatat rapi ke dalam tabel Markdown di file `logs/logger.md`.
 
 ---
 
@@ -146,20 +225,32 @@ Setiap request HTTP yang masuk akan otomatis:
 #### A. Halaman Utama (Hero Section & Status Server Live)
 <img width="1919" height="910" alt="image" src="https://github.com/user-attachments/assets/0155bb06-ade7-4bdd-945d-ce4c8c90de9e" />
 
-
-#### B. Katalog Topik Pembelajaran Adaptif
+#### B. Katalog Topik Pembelajaran Adaptif (Fitur Edit & Hapus Terintegrasi)
 <img width="1919" height="910" alt="image" src="https://github.com/user-attachments/assets/a584d1ee-ff44-4585-b083-e229ed15d55f" />
 
+#### C. Antarmuka Form Tambah Topik Baru (CREATE)
+
+
+#### D. Antarmuka Form Edit Topik (UPDATE)
+
+
+---
 
 ### 2. Bukti Pengujian Endpoint via Postman
 
 #### A. Pengujian `GET /api/status`
 <img width="1919" height="1035" alt="image" src="https://github.com/user-attachments/assets/22973f6d-81a4-421b-8ff7-81c91022ace0" />
 
-
-#### B. Pengujian `GET /api/produk`
+#### B. Pengujian `GET /api/topics` (Membaca Seluruh Data)
 <img width="1919" height="1034" alt="image" src="https://github.com/user-attachments/assets/f5d0e7b3-c677-4a7c-b67c-b3fe9e7c0430" />
 
+#### C. Pengujian `POST /api/topics` (Menambahkan Data Baru)
+
+
+#### D. Pengujian `PUT /api/topics/:id` (Memperbarui Data)
+
+
+#### E. Pengujian `DELETE /api/topics/:id` (Menghapus Data)
 
 ---
 
