@@ -3,9 +3,18 @@ const apiController = require('../controllers/apiController');
 
 const router = express.Router();
 
-// Endpoint Poin 2 Tugas: GET /api/status dan GET /api/produk
+// ============================================================================
+// Endpoint Status Server (Poin 2 Tugas)
+// ============================================================================
 router.get('/status', apiController.status);
-router.get('/produk', apiController.produk);
+
+// ============================================================================
+// Endpoint REST API CRUD Resource Topics (Poin 2 Tugas)
+// ============================================================================
+router.get('/topics', apiController.getAll);
+router.get('/topics/:id', apiController.getById);
+router.post('/topics', apiController.create);
+router.put('/topics/:id', apiController.update);
+router.delete('/topics/:id', apiController.delete);
 
 module.exports = router;
-
