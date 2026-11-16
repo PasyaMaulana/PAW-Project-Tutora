@@ -1,10 +1,9 @@
 const sequelize = require('../config/database');
-const Produk = require('./produkModel');
+const Topic = require('./topicModel');
 
 const db = {
   sequelize,
-  Produk,
+  Topic,
 };
 
 module.exports = db;
-
