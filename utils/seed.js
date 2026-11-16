@@ -1,9 +1,9 @@
 const sequelize = require('../config/database');
-const Produk = require('../models/produkModel');
+const Topic = require('../models/topicModel');
 
 /**
- * Script untuk mengisi (seed) data awal topik pembelajaran ke database PostgreSQL.
- * Prasyarat: Database (contoh: tutora_db) sudah dibuat manual oleh pengguna.
+ * Script seeder untuk menginisialisasi tabel topics dan mengisi data awal.
+ * Jalankan dengan perintah: npm run seed
  */
 async function seedDatabase() {
   try {
@@ -15,18 +15,16 @@ async function seedDatabase() {
     await sequelize.authenticate();
     console.log('   ✅ Koneksi database berhasil.');
 
-    console.log('🔄 2. Menyiapkan tabel "produks"...');
-    // Sinkronisasi skema tabel di dalam database yang sudah ada
-    await Produk.sync({ force: true });
-    console.log('   ✅ Tabel "produks" berhasil disiapkan.');
+    console.log('🔄 2. Menyiapkan tabel "topics" di PostgreSQL...');
+    await Topic.sync({ force: true });
+    console.log('   ✅ Tabel "topics" berhasil disinkronkan.');
 
-    console.log('🔄 3. Menginput daftar topik pembelajaran adaptif...');
-    const dataTanpaId = Produk.dataAwal.map(({ id, ...rest }) => rest);
-    await Produk.bulkCreate(dataTanpaId);
+    console.log('🔄 3. Menginput daftar topik pembelajaran awal...');
+    await Topic.bulkCreate(Topic.dataAwal);
 
-    console.log(`   ✨ Berhasil memasukkan ${dataTanpaId.length} topik pembelajaran ke PostgreSQL!`);
+    console.log(`   ✨ Berhasil menambahkan ${Topic.dataAwal.length} topik pembelajaran ke PostgreSQL!`);
     console.log('====================================================');
-    console.log('🎉 Seeding selesai! Jalankan `npm run dev` untuk membuka aplikasi.');
+    console.log('🎉 Seeding database selesai! Database siap diuji.');
     console.log('====================================================');
     process.exit(0);
   } catch (error) {
@@ -34,8 +32,8 @@ async function seedDatabase() {
     console.error('   Pesan error:', error.message);
     console.error('\n💡 Petunjuk:');
     console.error('   1. Pastikan server PostgreSQL sudah aktif.');
-    console.error('   2. Pastikan database sudah dibuat manual di pgAdmin/psql (CREATE DATABASE tutora_db;).');
-    console.error('   3. Cek file .env untuk memastikan DB_NAME, DB_USER, dan DB_PASSWORD sudah sesuai.');
+    console.error('   2. Pastikan database tutora_db sudah dibuat di PostgreSQL.');
+    console.error('   3. Cek file .env untuk username dan password database.');
     process.exit(1);
   }
 }
