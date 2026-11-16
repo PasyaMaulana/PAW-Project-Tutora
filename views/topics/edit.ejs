@@ -1,0 +1,306 @@
+<%- include('../partials/head', { judul: judul }) %>
+
+  <!-- Navbar Sederhana -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
+    <div class="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
+      <a href="/" class="flex items-center group py-2">
+        <img src="/images/tutora-logo.png" alt="Tutora Logo" class="h-12 w-auto object-contain transition-transform group-hover:scale-105">
+      </a>
+      <a href="/" class="text-sm font-semibold text-slate-600 hover:text-brand-600 transition flex items-center gap-1.5">
+        <iconify-icon icon="lucide:arrow-left" width="16" height="16"></iconify-icon>
+        <span>Kembali ke Beranda</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-3xl mx-auto w-full px-6 py-10">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6">
+      <a href="/" class="hover:text-brand-600 transition flex items-center gap-1">
+        <iconify-icon icon="lucide:home" width="14" height="14"></iconify-icon>
+        <span>Beranda</span>
+      </a>
+      <iconify-icon icon="lucide:chevron-right" width="12" height="12"></iconify-icon>
+      <span class="text-slate-800">Edit Topik #<%= topic.id %></span>
+    </nav>
+
+    <!-- Header Form -->
+    <div class="mb-8">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold mb-2">
+        <iconify-icon icon="lucide:edit-3" width="14" height="14"></iconify-icon>
+        <span>Operasi UPDATE Database</span>
+      </div>
+      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Edit Topik Pembelajaran</h1>
+      <p class="text-sm text-slate-600 mt-1">Perbarui detail materi untuk <span class="font-bold text-slate-800">"<%= topic.nama %>"</span>.</p>
+      <% if (topic.updatedAt) { %>
+        <p class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+          <iconify-icon icon="lucide:clock" width="12" height="12"></iconify-icon>
+          <span>Terakhir diperbarui: <%= formatTanggal(topic.updatedAt) %> WIB</span>
+        </p>
+      <% } %>
+    </div>
+
+    <!-- Alert Notifikasi jika ada Error -->
+    <%- include('../partials/alert') %>
+
+    <!-- Card Form Edit -->
+    <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm mb-8">
+      <form action="/topics/<%= topic.id %>/update" method="POST" class="space-y-6">
+
+        <!-- Nama Topik -->
+        <div>
+          <label for="nama" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+            Nama Topik / Materi Kuliah <span class="text-rose-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="nama"
+            name="nama"
+            value="<%= topic.nama %>"
+            required
+            class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 text-sm font-medium transition"
+          />
+        </div>
+
+        <!-- Kategori -->
+        <div>
+          <label for="kategori" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+            Kategori Ilmu <span class="text-rose-500">*</span>
+          </label>
+          <div class="relative">
+            <input
+              type="text"
+              id="kategori"
+              name="kategori"
+              value="<%= topic.kategori %>"
+              list="kategori-list"
+              required
+              class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 text-sm font-medium transition"
+            />
+            <datalist id="kategori-list">
+              <option value="Web Development"></option>
+              <option value="Computer Science"></option>
+              <option value="Database"></option>
+              <option value="Software Engineering"></option>
+              <option value="Networking"></option>
+              <option value="Artificial Intelligence"></option>
+              <option value="Cyber Security"></option>
+            </datalist>
+          </div>
+        </div>
+
+        <!-- Deskripsi -->
+        <div>
+          <label for="deskripsi" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+            Deskripsi Materi <span class="text-rose-500">*</span>
+          </label>
+          <textarea
+            id="deskripsi"
+            name="deskripsi"
+            rows="4"
+            required
+            class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 text-sm font-medium transition resize-none"
+          ><%= topic.deskripsi %></textarea>
+        </div>
+
+        <!-- Icon Iconify dengan Live Preview & Link Direktori -->
+        <div>
+          <div class="flex flex-wrap items-center justify-between gap-1 mb-2">
+            <label for="icon" class="block text-xs font-bold uppercase tracking-wider text-slate-700">
+              Ikon Topik (Iconify Lucide)
+            </label>
+            <a
+              href="https://icon-sets.iconify.design/lucide/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-xs font-semibold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1 hover:underline transition"
+              title="Buka katalog direktori ikon di tab baru"
+            >
+              <span>Buka Katalog Ikon Iconify</span>
+              <iconify-icon icon="lucide:external-link" width="13" height="13"></iconify-icon>
+            </a>
+          </div>
+
+          <!-- Preview & Input -->
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl bg-brand-50 border border-brand-200 flex items-center justify-center text-brand-600 shadow-sm shrink-0">
+              <iconify-icon id="icon-preview" icon="<%= topic.icon || 'lucide:book-open' %>" width="26" height="26"></iconify-icon>
+            </div>
+            <div class="relative flex-1">
+              <input
+                type="text"
+                id="icon"
+                name="icon"
+                value="<%= topic.icon || 'lucide:book-open' %>"
+                placeholder="Contoh: lucide:globe, lucide:database, lucide:code-2"
+                oninput="updateIconPreview(this.value)"
+                class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 text-sm font-mono transition"
+              />
+            </div>
+          </div>
+
+          <p class="text-xs text-slate-500 mt-2">
+            💡 <strong>Panduan:</strong> Klik tombol ikon di bawah untuk mengganti ikon cepat, atau cari di <a href="https://icon-sets.iconify.design/lucide/" target="_blank" rel="noopener noreferrer" class="text-brand-600 hover:underline font-semibold">Direktori Iconify Lucide ↗</a> (format: <code class="bg-slate-100 text-brand-600 px-1 py-0.5 rounded font-mono">lucide:nama-ikon</code>).
+          </p>
+
+          <!-- Pilihan Cepat Ikon Populer (Visual Picker) -->
+          <div class="mt-3">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-2">Pilihan Cepat Ikon Populer (Klik untuk memilih):</span>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+              <button type="button" onclick="selectIcon('lucide:globe')" class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-brand-50 hover:border-brand-300 text-slate-700 hover:text-brand-700 text-xs font-medium transition group">
+                <iconify-icon icon="lucide:globe" width="18" height="18" class="text-brand-600 shrink-0 group-hover:scale-110 transition-transform"></iconify-icon>
+                <span class="truncate whitespace-nowrap">Web Dev</span>
+              </button>
+              <button type="button" onclick="selectIcon('lucide:code-2')" class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-brand-50 hover:border-brand-300 text-slate-700 hover:text-brand-700 text-xs font-medium transition group">
+                <iconify-icon icon="lucide:code-2" width="18" height="18" class="text-brand-600 shrink-0 group-hover:scale-110 transition-transform"></iconify-icon>
+                <span class="truncate whitespace-nowrap">Coding</span>
+              </button>
+              <button type="button" onclick="selectIcon('lucide:database')" class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-brand-50 hover:border-brand-300 text-slate-700 hover:text-brand-700 text-xs font-medium transition group">
+                <iconify-icon icon="lucide:database" width="18" height="18" class="text-brand-600 shrink-0 group-hover:scale-110 transition-transform"></iconify-icon>
+                <span class="truncate whitespace-nowrap">Database</span>
+              </button>
+              <button type="button" onclick="selectIcon('lucide:bot')" class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-brand-50 hover:border-brand-300 text-slate-700 hover:text-brand-700 text-xs font-medium transition group">
+                <iconify-icon icon="lucide:bot" width="18" height="18" class="text-brand-600 shrink-0 group-hover:scale-110 transition-transform"></iconify-icon>
+                <span class="truncate whitespace-nowrap">AI & Bot</span>
+              </button>
+              <button type="button" onclick="selectIcon('lucide:brain')" class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-brand-50 hover:border-brand-300 text-slate-700 hover:text-brand-700 text-xs font-medium transition group">
+                <iconify-icon icon="lucide:brain" width="18" height="18" class="text-brand-600 shrink-0 group-hover:scale-110 transition-transform"></iconify-icon>
+                <span class="truncate whitespace-nowrap">Machine Learning</span>
+              </button>
+              <button type="button" onclick="selectIcon('lucide:cpu')" class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-brand-50 hover:border-brand-300 text-slate-700 hover:text-brand-700 text-xs font-medium transition group">
+                <iconify-icon icon="lucide:cpu" width="18" height="18" class="text-brand-600 shrink-0 group-hover:scale-110 transition-transform"></iconify-icon>
+                <span class="truncate whitespace-nowrap">Hardware</span>
+              </button>
+              <button type="button" onclick="selectIcon('lucide:shield-check')" class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-brand-50 hover:border-brand-300 text-slate-700 hover:text-brand-700 text-xs font-medium transition group">
+                <iconify-icon icon="lucide:shield-check" width="18" height="18" class="text-brand-600 shrink-0 group-hover:scale-110 transition-transform"></iconify-icon>
+                <span class="truncate whitespace-nowrap">Security</span>
+              </button>
+              <button type="button" onclick="selectIcon('lucide:cloud')" class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-brand-50 hover:border-brand-300 text-slate-700 hover:text-brand-700 text-xs font-medium transition group">
+                <iconify-icon icon="lucide:cloud" width="18" height="18" class="text-brand-600 shrink-0 group-hover:scale-110 transition-transform"></iconify-icon>
+                <span class="truncate whitespace-nowrap">Cloud</span>
+              </button>
+              <button type="button" onclick="selectIcon('lucide:smartphone')" class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-brand-50 hover:border-brand-300 text-slate-700 hover:text-brand-700 text-xs font-medium transition group">
+                <iconify-icon icon="lucide:smartphone" width="18" height="18" class="text-brand-600 shrink-0 group-hover:scale-110 transition-transform"></iconify-icon>
+                <span class="truncate whitespace-nowrap">Mobile</span>
+              </button>
+              <button type="button" onclick="selectIcon('lucide:book-open')" class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-brand-50 hover:border-brand-300 text-slate-700 hover:text-brand-700 text-xs font-medium transition group">
+                <iconify-icon icon="lucide:book-open" width="18" height="18" class="text-brand-600 shrink-0 group-hover:scale-110 transition-transform"></iconify-icon>
+                <span class="truncate whitespace-nowrap">Materi Kuliah</span>
+              </button>
+              <button type="button" onclick="selectIcon('lucide:binary')" class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-brand-50 hover:border-brand-300 text-slate-700 hover:text-brand-700 text-xs font-medium transition group">
+                <iconify-icon icon="lucide:binary" width="18" height="18" class="text-brand-600 shrink-0 group-hover:scale-110 transition-transform"></iconify-icon>
+                <span class="truncate whitespace-nowrap">Algoritma</span>
+              </button>
+              <button type="button" onclick="selectIcon('lucide:palette')" class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50/80 hover:bg-brand-50 hover:border-brand-300 text-slate-700 hover:text-brand-700 text-xs font-medium transition group">
+                <iconify-icon icon="lucide:palette" width="18" height="18" class="text-brand-600 shrink-0 group-hover:scale-110 transition-transform"></iconify-icon>
+                <span class="truncate whitespace-nowrap">UI / UX</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <script>
+          function selectIcon(iconName) {
+            const input = document.getElementById('icon');
+            if (input) {
+              input.value = iconName;
+              updateIconPreview(iconName);
+            }
+          }
+          function updateIconPreview(val) {
+            const preview = document.getElementById('icon-preview');
+            if (preview) {
+              preview.setAttribute('icon', (val && val.trim()) ? val.trim() : 'lucide:help-circle');
+            }
+          }
+        </script>
+
+        <!-- Opsi Tingkat Pemahaman -->
+        <div>
+          <span class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2.5">
+            Tingkat Pemahaman yang Didukung
+          </span>
+          <% const levelsList = Array.isArray(topic.levels) ? topic.levels : (typeof topic.levels === 'string' ? JSON.parse(topic.levels || '[]') : ['Pemula', 'Menengah', 'Lanjut']); %>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <!-- Pemula -->
+            <label class="group relative flex items-center gap-3 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-brand-50/40 hover:border-brand-500/50 cursor-pointer select-none transition-all has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/80 has-[:checked]:ring-1 has-[:checked]:ring-brand-600/20">
+              <input type="checkbox" name="levels" value="Pemula" <%= levelsList.includes('Pemula') ? 'checked' : '' %> class="peer sr-only">
+              <span class="w-5 h-5 rounded-md border-2 border-slate-300 bg-white flex items-center justify-center text-transparent transition-all group-hover:border-brand-500 peer-checked:bg-brand-600 peer-checked:border-brand-600 peer-checked:text-white shrink-0">
+                <iconify-icon icon="lucide:check" width="13" height="13"></iconify-icon>
+              </span>
+              <span class="flex flex-col">
+                <span class="text-sm font-bold text-slate-800 group-has-[:checked]:text-brand-900 leading-tight">Pemula</span>
+                <span class="text-[11px] text-slate-500">Dasar & bahasa sederhana</span>
+              </span>
+            </label>
+
+            <!-- Menengah -->
+            <label class="group relative flex items-center gap-3 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-brand-50/40 hover:border-brand-500/50 cursor-pointer select-none transition-all has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/80 has-[:checked]:ring-1 has-[:checked]:ring-brand-600/20">
+              <input type="checkbox" name="levels" value="Menengah" <%= levelsList.includes('Menengah') ? 'checked' : '' %> class="peer sr-only">
+              <span class="w-5 h-5 rounded-md border-2 border-slate-300 bg-white flex items-center justify-center text-transparent transition-all group-hover:border-brand-500 peer-checked:bg-brand-600 peer-checked:border-brand-600 peer-checked:text-white shrink-0">
+                <iconify-icon icon="lucide:check" width="13" height="13"></iconify-icon>
+              </span>
+              <span class="flex flex-col">
+                <span class="text-sm font-bold text-slate-800 group-has-[:checked]:text-brand-900 leading-tight">Menengah</span>
+                <span class="text-[11px] text-slate-500">Penerapan & studi kasus</span>
+              </span>
+            </label>
+
+            <!-- Lanjut -->
+            <label class="group relative flex items-center gap-3 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-brand-50/40 hover:border-brand-500/50 cursor-pointer select-none transition-all has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/80 has-[:checked]:ring-1 has-[:checked]:ring-brand-600/20">
+              <input type="checkbox" name="levels" value="Lanjut" <%= levelsList.includes('Lanjut') ? 'checked' : '' %> class="peer sr-only">
+              <span class="w-5 h-5 rounded-md border-2 border-slate-300 bg-white flex items-center justify-center text-transparent transition-all group-hover:border-brand-500 peer-checked:bg-brand-600 peer-checked:border-brand-600 peer-checked:text-white shrink-0">
+                <iconify-icon icon="lucide:check" width="13" height="13"></iconify-icon>
+              </span>
+              <span class="flex flex-col">
+                <span class="text-sm font-bold text-slate-800 group-has-[:checked]:text-brand-900 leading-tight">Lanjut</span>
+                <span class="text-[11px] text-slate-500">Analisis mendalam & teknis</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Tombol Aksi -->
+        <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
+          <a
+            href="/"
+            class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-semibold text-sm hover:bg-slate-50 transition"
+          >
+            Batal
+          </a>
+          <button
+            type="submit"
+            class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-sm transition hover:shadow-md flex items-center gap-2"
+          >
+            <iconify-icon icon="lucide:save" width="16" height="16"></iconify-icon>
+            <span>Simpan Perubahan</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Danger Zone: Hapus Topik -->
+    <div class="bg-rose-50 rounded-3xl border border-rose-200 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h3 class="text-sm font-bold text-rose-900 flex items-center gap-2">
+          <iconify-icon icon="lucide:alert-triangle" width="18" height="18" class="text-rose-600"></iconify-icon>
+          <span>Hapus Topik Ini</span>
+        </h3>
+        <p class="text-xs text-rose-700 mt-1">Data akan dihapus secara permanen dari database PostgreSQL.</p>
+      </div>
+      <form action="/topics/<%= topic.id %>/delete" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus topik ini dari database? Tindakan ini tidak dapat dibatalkan.')">
+        <button
+          type="submit"
+          class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-sm transition flex items-center gap-1.5"
+        >
+          <iconify-icon icon="lucide:trash-2" width="14" height="14"></iconify-icon>
+          <span>Hapus Topik</span>
+        </button>
+      </form>
+    </div>
+
+  </main>
+
+<%- include('../partials/footer') %>
+
