@@ -229,9 +229,10 @@ Middleware logger mencatat setiap request HTTP yang masuk ke server:
 <img width="1919" height="910" alt="image" src="https://github.com/user-attachments/assets/a584d1ee-ff44-4585-b083-e229ed15d55f" />
 
 #### C. Antarmuka Form Tambah Topik Baru (CREATE)
-
+<img width="1914" height="909" alt="image" src="https://github.com/user-attachments/assets/b360934e-570f-4c31-92bd-a1f6f5ae879e" />
 
 #### D. Antarmuka Form Edit Topik (UPDATE)
+<img width="1919" height="912" alt="image" src="https://github.com/user-attachments/assets/64cf5a7c-4c1e-466f-bf71-73246b50af59" />
 
 
 ---
@@ -245,12 +246,13 @@ Middleware logger mencatat setiap request HTTP yang masuk ke server:
 <img width="1919" height="1034" alt="image" src="https://github.com/user-attachments/assets/f5d0e7b3-c677-4a7c-b67c-b3fe9e7c0430" />
 
 #### C. Pengujian `POST /api/topics` (Menambahkan Data Baru)
-
+<img width="1919" height="1034" alt="image" src="https://github.com/user-attachments/assets/4f1f3858-5323-4526-ab54-f1578f66f9f0" />
 
 #### D. Pengujian `PUT /api/topics/:id` (Memperbarui Data)
-
+<img width="1919" height="1033" alt="image" src="https://github.com/user-attachments/assets/ed8e424f-8d66-4fc0-b70a-8d618f88aa1f" />
 
 #### E. Pengujian `DELETE /api/topics/:id` (Menghapus Data)
+<img width="1919" height="1031" alt="image" src="https://github.com/user-attachments/assets/a0912cce-491a-4e9d-bcc5-08e31cc97395" />
 
 ---
 
