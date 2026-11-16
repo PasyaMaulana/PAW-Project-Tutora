@@ -1,10 +1,11 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
+// Kredensial database diambil dari file .env (tidak di-upload ke GitHub)
 const sequelize = new Sequelize(
   process.env.DB_NAME || 'tutora_db',
   process.env.DB_USER || 'postgres',
-  process.env.DB_PASSWORD || '123',
+  process.env.DB_PASSWORD,
   {
     host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT || 5432,
