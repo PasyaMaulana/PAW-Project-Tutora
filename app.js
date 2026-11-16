@@ -4,12 +4,16 @@ const config = require('./config');
 const logger = require('./middlewares/logger');
 const routes = require('./routes');
 const sequelize = require('./config/database');
+const { formatTanggal } = require('./utils/format');
 
 const app = express();
 
 // Konfigurasi View Engine (EJS)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+// Helper yang bisa dipanggil langsung dari template EJS
+app.locals.formatTanggal = formatTanggal;
 
 // Konfigurasi Middlewares
 app.use(express.json());
@@ -50,14 +54,20 @@ const server = app.listen(config.port, () => {
   console.log(`🚀 ${config.appName} berjalan di port ${config.port}`);
   console.log(`🌐 Frontend     : http://localhost:${config.port}`);
   console.log(`📡 API Status   : http://localhost:${config.port}/api/status`);
-  console.log(`📦 API Produk   : http://localhost:${config.port}/api/produk`);
+  console.log(`📚 API Topics   : http://localhost:${config.port}/api/topics`);
   console.log(`====================================================`);
 });
 
-// Cek status koneksi PostgreSQL di latar belakang
+// Cek status koneksi PostgreSQL dan sinkronisasi tabel
 sequelize.authenticate()
-  .then(() => {
+  .then(async () => {
     console.log('✅ Koneksi ke database PostgreSQL berhasil.');
+    try {
+      await sequelize.sync({ alter: true });
+      console.log('✅ Sinkronisasi tabel model ke database PostgreSQL selesai.');
+    } catch (syncErr) {
+      console.warn('⚠️  Peringatan saat sinkronisasi model:', syncErr.message);
+    }
   })
   .catch((error) => {
     console.warn('⚠️  Peringatan: Belum dapat terhubung ke database PostgreSQL.');
