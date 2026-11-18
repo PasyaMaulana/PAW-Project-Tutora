@@ -2,11 +2,11 @@
   "name": "paw-project-tutora",
   "version": "1.0.0",
   "description": "Tutora - Aplikasi web pembelajaran adaptif berbasis AI untuk mahasiswa (Express.js, EJS, PostgreSQL, MVC)",
-  "main": "app.js",
+  "main": "backend/app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "seed": "node utils/seed.js",
+    "start": "node backend/app.js",
+    "dev": "nodemon --watch backend backend/app.js",
+    "seed": "node backend/utils/seed.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,6 +14,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@google/genai": "^3.4.0",
     "dotenv": "^18.0.9",
     "ejs": "^7.0.2",
     "express": "^5.3.0",

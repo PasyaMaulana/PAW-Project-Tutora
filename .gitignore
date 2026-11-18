@@ -1,5 +1,4 @@
 node_modules/
 .env
-logs/*.md
-!logs/.gitkeep
-
+backend/logs/*
+!backend/logs/.gitkeep
