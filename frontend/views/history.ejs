@@ -1,0 +1,59 @@
+<%- include('partials/head', { judul: judul }) %>
+<%- include('partials/navbar') %>
+
+  <main class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <!-- Header Halaman -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+      <div>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-semibold mb-2">
+          <iconify-icon icon="lucide:history" width="14" height="14"></iconify-icon>
+          <span>Riwayat Belajar</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Riwayat Chat &amp; Hasil Uji</h1>
+        <p class="text-sm text-slate-600 mt-1">Buka kembali materi yang pernah kamu pelajari, lanjutkan sesi, atau hapus riwayatmu.</p>
+      </div>
+      <button
+        type="button"
+        id="btn-clear-all"
+        class="hidden self-start sm:self-auto px-4 py-2.5 rounded-xl border border-rose-200 bg-white hover:bg-rose-50 text-rose-600 font-semibold text-xs transition items-center gap-1.5"
+      >
+        <iconify-icon icon="lucide:trash-2" width="14" height="14"></iconify-icon>
+        <span>Hapus Semua Riwayat</span>
+      </button>
+    </div>
+
+    <!-- Catatan penyimpanan lokal (PRD Risiko: riwayat hilang / localStorage terbatas) -->
+    <div class="flex items-start gap-3 px-4 py-3 mb-6 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs leading-relaxed">
+      <iconify-icon icon="lucide:hard-drive" width="16" height="16" class="mt-0.5 shrink-0 text-amber-600"></iconify-icon>
+      <p>
+        Riwayat hanya tersimpan di <strong>browser ini</strong> (localStorage) dan tidak dikirim ke server. Riwayat akan hilang jika data browser dibersihkan atau kamu memakai perangkat lain.
+      </p>
+    </div>
+
+    <!-- Ringkasan -->
+    <div id="history-stats" class="hidden grid grid-cols-3 gap-3 mb-6"></div>
+
+    <!-- Daftar sesi (dirender oleh /js/history.js) -->
+    <div id="history-list" class="space-y-3" aria-live="polite"></div>
+
+    <!-- Empty State -->
+    <div id="history-empty" class="hidden py-16 text-center bg-white rounded-3xl border border-dashed border-slate-300 px-6">
+      <div class="h-14 w-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+        <iconify-icon icon="lucide:message-square-dashed" width="28" height="28"></iconify-icon>
+      </div>
+      <h2 class="text-base font-bold text-slate-800">Belum ada riwayat belajar</h2>
+      <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Pertanyaan, jawaban tutor, dan hasil Uji Pemahamanku akan tersimpan di sini setelah kamu mulai belajar.</p>
+      <a href="/assistant" class="inline-flex items-center gap-1.5 mt-5 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs shadow-sm transition">
+        <iconify-icon icon="lucide:sparkles" width="14" height="14"></iconify-icon>
+        <span>Mulai Belajar dengan AI Tutor</span>
+      </a>
+    </div>
+  </main>
+
+<%- include('partials/confirm-modal') %>
+  <script src="/js/markdown.js"></script>
+  <script src="/js/storage.js"></script>
+  <script src="/js/quiz-card.js"></script>
+  <script src="/js/history.js"></script>
+
+<%- include('partials/footer') %>

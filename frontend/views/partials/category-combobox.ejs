@@ -1,0 +1,85 @@
+<%
+  // Dropdown kategori custom (gaya sama dengan dropdown topik di AI Tutor).
+  // Parameter: value (kategori terpilih), categories (daftar pilihan). Admin tetap boleh mengetik kategori baru.
+  const nilai = typeof value !== 'undefined' && value ? value : '';
+  const daftar = typeof categories !== 'undefined' && Array.isArray(categories) ? categories : [];
+  const IKON_KATEGORI = {
+    'web development': 'lucide:globe',
+    'computer science': 'lucide:binary',
+    'database': 'lucide:database',
+    'software engineering': 'lucide:code-2',
+    'networking': 'lucide:network',
+    'artificial intelligence': 'lucide:bot',
+    'cyber security': 'lucide:shield',
+    'infrastructure': 'lucide:server',
+    'mobile development': 'lucide:smartphone',
+    'data science': 'lucide:bar-chart-3',
+  };
+  const ikonUntuk = function (k) { return IKON_KATEGORI[String(k).toLowerCase()] || 'lucide:tag'; };
+%>
+<div class="relative" data-combobox>
+  <div class="relative">
+    <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-7 w-7 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center">
+      <iconify-icon data-combobox-icon icon="<%= nilai ? ikonUntuk(nilai) : 'lucide:tag' %>" width="15" height="15"></iconify-icon>
+    </span>
+    <input
+      type="text"
+      id="kategori"
+      name="kategori"
+      value="<%= nilai %>"
+      required
+      autocomplete="off"
+      role="combobox"
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-controls="kategori-listbox"
+      placeholder="Pilih atau ketik kategori baru"
+      class="w-full pl-12 pr-11 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 aria-expanded:bg-white aria-expanded:border-brand-500 aria-expanded:ring-2 aria-expanded:ring-brand-500/20 text-sm font-medium transition"
+    />
+    <button type="button" data-combobox-toggle tabindex="-1" aria-label="Tampilkan pilihan kategori" class="group absolute inset-y-0 right-0 px-3.5 flex items-center text-slate-400 hover:text-slate-700">
+      <iconify-icon data-combobox-chevron icon="lucide:chevron-down" width="16" height="16" class="transition-transform duration-200"></iconify-icon>
+    </button>
+  </div>
+
+  <div data-combobox-panel class="hidden absolute z-30 mt-2 w-full rounded-xl border border-slate-200 bg-white shadow-xl shadow-slate-900/10 overflow-hidden">
+    <ul id="kategori-listbox" role="listbox" aria-label="Pilihan kategori" class="max-h-64 overflow-y-auto p-1.5 space-y-0.5">
+      <% if (daftar.length) { %>
+        <li role="presentation" data-combobox-divider class="px-2.5 pt-1.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">Kategori Tersedia</li>
+      <% } %>
+      <% daftar.forEach(function(k) { %>
+        <li
+          role="option"
+          data-combobox-option
+          data-value="<%= k %>"
+          data-icon="<%= ikonUntuk(k) %>"
+          aria-selected="<%= nilai.toLowerCase() === k.toLowerCase() ? 'true' : 'false' %>"
+          class="group flex items-center gap-3 px-2.5 py-2 rounded-lg cursor-pointer select-none hover:bg-slate-50 data-[active=true]:bg-slate-100 aria-selected:bg-brand-50"
+        >
+          <span class="h-8 w-8 shrink-0 rounded-lg bg-slate-100 text-slate-600 group-aria-selected:bg-brand-100 group-aria-selected:text-brand-700 flex items-center justify-center">
+            <iconify-icon icon="<%= ikonUntuk(k) %>" width="16" height="16"></iconify-icon>
+          </span>
+          <span class="min-w-0 flex-1 text-sm font-medium text-slate-800 group-aria-selected:text-brand-800 truncate"><%= k %></span>
+          <iconify-icon icon="lucide:check" width="16" height="16" class="shrink-0 text-brand-600 invisible group-aria-selected:visible"></iconify-icon>
+        </li>
+      <% }); %>
+
+      <!-- Opsi membuat kategori baru dari teks yang diketik -->
+      <li
+        role="option"
+        data-combobox-create
+        aria-selected="false"
+        class="hidden group flex items-center gap-3 px-2.5 py-2 rounded-lg cursor-pointer select-none hover:bg-slate-50 data-[active=true]:bg-slate-100"
+      >
+        <span class="h-8 w-8 shrink-0 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+          <iconify-icon icon="lucide:plus" width="16" height="16"></iconify-icon>
+        </span>
+        <span class="min-w-0 flex-1 text-sm text-slate-700 truncate">Gunakan kategori baru "<strong data-combobox-create-text class="text-slate-900"></strong>"</span>
+      </li>
+
+      <li data-combobox-empty role="presentation" class="hidden px-3 py-5 text-center text-xs text-slate-400">
+        Ketik nama kategori untuk membuat kategori baru
+      </li>
+    </ul>
+  </div>
+</div>
+<script src="/js/combobox.js" defer></script>

@@ -1,0 +1,354 @@
+<%- include('partials/head', { judul: judul }) %>
+<%- include('partials/navbar') %>
+
+<% const selectedTopic = topics.find(function(t) { return t.id === selectedTopicId; }) || null; %>
+
+  <main class="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-6 grid lg:grid-cols-12 gap-6 items-start">
+    <!-- ================================================================== -->
+    <!-- Panel Pengaturan Sesi (F-01: Pemilihan Topik & Tingkat Pemahaman)  -->
+    <!-- ================================================================== -->
+    <aside class="lg:col-span-4 space-y-4">
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <h2 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <iconify-icon icon="lucide:sliders-horizontal" width="16" height="16" class="text-slate-500"></iconify-icon>
+          <span>Pengaturan Sesi</span>
+        </h2>
+
+        <!-- Dropdown Custom: Topik Pembelajaran (ikon, kategori, pencarian, navigasi keyboard) -->
+        <div class="mb-5">
+          <span id="topic-label" class="block text-xs font-semibold text-slate-700 mb-1.5">Topik Pembelajaran</span>
+          <div class="relative" id="topic-dropdown">
+            <!-- Nilai topik terpilih yang dibaca oleh assistant.js -->
+            <input type="hidden" id="topic-select" value="<%= selectedTopic ? selectedTopic.id : '' %>">
+
+            <button
+              type="button"
+              id="topic-trigger"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-controls="topic-listbox"
+              aria-labelledby="topic-label topic-trigger-text"
+              class="group w-full flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-left shadow-sm hover:border-slate-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 aria-expanded:border-brand-500 aria-expanded:ring-2 aria-expanded:ring-brand-500/20 transition"
+            >
+              <span class="h-9 w-9 shrink-0 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center">
+                <iconify-icon id="topic-trigger-icon" icon="<%= selectedTopic ? (selectedTopic.icon || 'lucide:book-open') : 'lucide:layers' %>" width="18" height="18"></iconify-icon>
+              </span>
+              <span class="min-w-0 flex-1">
+                <span id="topic-trigger-text" class="block text-sm font-semibold text-slate-800 truncate"><%= selectedTopic ? selectedTopic.nama : 'Semua Topik' %></span>
+                <span id="topic-trigger-sub" class="block text-[11px] text-slate-500 truncate"><%= selectedTopic ? selectedTopic.kategori : 'Bimbingan umum seluruh katalog' %></span>
+              </span>
+              <iconify-icon icon="lucide:chevron-down" width="16" height="16" class="shrink-0 text-slate-400 transition-transform duration-200 group-aria-expanded:rotate-180"></iconify-icon>
+            </button>
+
+            <div id="topic-panel" class="hidden absolute z-30 mt-2 w-full rounded-xl border border-slate-200 bg-white shadow-xl shadow-slate-900/10 overflow-hidden">
+              <div class="p-2 border-b border-slate-100">
+                <div class="relative">
+                  <iconify-icon icon="lucide:search" width="14" height="14" class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"></iconify-icon>
+                  <input
+                    type="text"
+                    id="topic-search"
+                    placeholder="Cari topik atau kategori..."
+                    autocomplete="off"
+                    aria-label="Cari topik"
+                    class="w-full rounded-lg bg-slate-50 border border-transparent pl-8 pr-3 py-2 text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition"
+                  >
+                </div>
+              </div>
+
+              <ul id="topic-listbox" role="listbox" aria-labelledby="topic-label" tabindex="-1" class="max-h-72 overflow-y-auto p-1.5 space-y-0.5 focus:outline-none">
+                <li
+                  role="option"
+                  data-value=""
+                  data-name="Semua Topik"
+                  data-sub="Bimbingan umum seluruh katalog"
+                  data-icon="lucide:layers"
+                  data-levels="<%= JSON.stringify(levels) %>"
+                  aria-selected="<%= selectedTopic ? 'false' : 'true' %>"
+                  class="topic-option group flex items-center gap-3 px-2.5 py-2 rounded-lg cursor-pointer select-none hover:bg-slate-50 data-[active=true]:bg-slate-100 aria-selected:bg-brand-50"
+                >
+                  <span class="h-8 w-8 shrink-0 rounded-lg bg-slate-100 text-slate-600 group-aria-selected:bg-brand-100 group-aria-selected:text-brand-700 flex items-center justify-center">
+                    <iconify-icon icon="lucide:layers" width="16" height="16"></iconify-icon>
+                  </span>
+                  <span class="min-w-0 flex-1">
+                    <span class="block text-sm font-medium text-slate-800 group-aria-selected:text-brand-800 truncate">Semua Topik</span>
+                    <span class="block text-[11px] text-slate-500 truncate">Bimbingan umum seluruh katalog</span>
+                  </span>
+                  <iconify-icon icon="lucide:check" width="16" height="16" class="shrink-0 text-brand-600 invisible group-aria-selected:visible"></iconify-icon>
+                </li>
+
+                <% if (topics.length) { %>
+                  <li role="presentation" class="topic-divider px-2.5 pt-2.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">Topik di Katalog (<%= topics.length %>)</li>
+                <% } %>
+
+                <% topics.forEach(function(t) { %>
+                  <li
+                    role="option"
+                    data-value="<%= t.id %>"
+                    data-name="<%= t.nama %>"
+                    data-sub="<%= t.kategori %>"
+                    data-icon="<%= t.icon || 'lucide:book-open' %>"
+                    data-levels="<%= JSON.stringify(Array.isArray(t.levels) && t.levels.length ? t.levels : levels) %>"
+                    aria-selected="<%= selectedTopic && selectedTopic.id === t.id ? 'true' : 'false' %>"
+                    class="topic-option group flex items-center gap-3 px-2.5 py-2 rounded-lg cursor-pointer select-none hover:bg-slate-50 data-[active=true]:bg-slate-100 aria-selected:bg-brand-50"
+                  >
+                    <span class="h-8 w-8 shrink-0 rounded-lg bg-slate-100 text-slate-600 group-aria-selected:bg-brand-100 group-aria-selected:text-brand-700 flex items-center justify-center">
+                      <iconify-icon icon="<%= t.icon || 'lucide:book-open' %>" width="16" height="16"></iconify-icon>
+                    </span>
+                    <span class="min-w-0 flex-1">
+                      <span class="block text-sm font-medium text-slate-800 group-aria-selected:text-brand-800 truncate"><%= t.nama %></span>
+                      <span class="block text-[11px] text-slate-500 truncate"><%= t.kategori %></span>
+                    </span>
+                    <iconify-icon icon="lucide:check" width="16" height="16" class="shrink-0 text-brand-600 invisible group-aria-selected:visible"></iconify-icon>
+                  </li>
+                <% }); %>
+
+                <li id="topic-empty" role="presentation" class="hidden px-3 py-6 text-center text-xs text-slate-400">
+                  Topik tidak ditemukan
+                </li>
+              </ul>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1.5">Satu sesi membahas satu topik. Mengganti topik akan memulai sesi baru.</p>
+        </div>
+
+        <!-- Segmented Control: Tingkat Pemahaman -->
+        <div>
+          <span class="block text-xs font-semibold text-slate-700 mb-2">Tingkat Pemahaman</span>
+          <div class="bg-slate-100 p-1 rounded-xl grid grid-cols-3 gap-1" role="radiogroup" aria-label="Tingkat pemahaman">
+            <% levels.forEach(function(lvl) { %>
+              <label class="cursor-pointer select-none has-[:disabled]:cursor-not-allowed">
+                <input type="radio" name="level" value="<%= lvl %>" class="peer sr-only" <%= selectedLevel === lvl ? 'checked' : '' %>>
+                <span class="block text-center text-xs py-2 px-1 rounded-lg font-medium text-slate-600 hover:text-slate-900 peer-checked:bg-white peer-checked:text-brand-700 peer-checked:font-semibold peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500/40 peer-disabled:opacity-40 peer-disabled:line-through peer-disabled:cursor-not-allowed transition">
+                  <%= lvl %>
+                </span>
+              </label>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Contoh Pertanyaan -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <h3 class="text-xs font-bold text-slate-700 mb-3">Contoh Pertanyaan</h3>
+        <div class="space-y-2">
+          <button type="button" class="suggestion w-full text-left text-xs p-2.5 rounded-lg border border-slate-100 bg-slate-50 hover:bg-slate-100 hover:border-slate-200 text-slate-700 transition">
+            Topik apa saja yang tersedia di katalog Tutora?
+          </button>
+          <button type="button" class="suggestion w-full text-left text-xs p-2.5 rounded-lg border border-slate-100 bg-slate-50 hover:bg-slate-100 hover:border-slate-200 text-slate-700 transition">
+            Jelaskan konsep inti topik yang saya pilih
+          </button>
+          <button type="button" class="suggestion w-full text-left text-xs p-2.5 rounded-lg border border-slate-100 bg-slate-50 hover:bg-slate-100 hover:border-slate-200 text-slate-700 transition">
+            Topik mana yang cocok untuk pemula di bidang pemrograman?
+          </button>
+        </div>
+      </div>
+
+      <!-- Card Cara Belajar Aktif -->
+      <div class="bg-gradient-to-br from-brand-50 to-white rounded-2xl border border-brand-100 p-5">
+        <h3 class="text-xs font-bold text-brand-900 mb-3 flex items-center gap-1.5">
+          <iconify-icon icon="lucide:lightbulb" width="14" height="14" class="text-amber-500"></iconify-icon>
+          Belajar Aktif, Bukan Sekadar Jawaban
+        </h3>
+        <ul class="space-y-2 text-[11px] text-slate-600 leading-relaxed">
+          <li class="flex gap-2"><iconify-icon icon="lucide:wand-2" width="13" height="13" class="mt-0.5 shrink-0 text-brand-600"></iconify-icon><span><strong class="text-slate-800">Jelaskan Lebih Sederhana</strong> jika penjelasan terasa sulit.</span></li>
+          <li class="flex gap-2"><iconify-icon icon="lucide:shapes" width="13" height="13" class="mt-0.5 shrink-0 text-brand-600"></iconify-icon><span><strong class="text-slate-800">Beri Contoh</strong> untuk konsep yang abstrak.</span></li>
+          <li class="flex gap-2"><iconify-icon icon="lucide:clipboard-check" width="13" height="13" class="mt-0.5 shrink-0 text-brand-600"></iconify-icon><span><strong class="text-slate-800">Uji Pemahamanku</strong>: jawab 3 pertanyaan dan dapatkan feedback.</span></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- ================================================================== -->
+    <!-- Panel Percakapan (F-02 Chat, F-03 Uji, F-05 Sederhana, F-06 Contoh)  -->
+    <!-- ================================================================== -->
+    <section class="lg:col-span-8 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col h-[78vh] min-h-[520px] overflow-hidden">
+      <!-- Header Chat Panel -->
+      <div class="px-4 sm:px-5 py-3 border-b border-slate-200 bg-white flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="relative shrink-0">
+            <div class="h-9 w-9 rounded-full bg-white border border-slate-200 flex items-center justify-center">
+              <img src="/images/tutora-owl.png" alt="Tutora" class="h-[22px] w-auto">
+            </div>
+            <span class="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-white"></span>
+          </div>
+          <div class="min-w-0">
+            <h1 class="font-bold text-slate-900 text-sm leading-tight truncate">Tutora AI Tutor</h1>
+            <!-- Chip konteks aktif: topik & level (diperbarui oleh assistant.js) -->
+            <p class="mt-0.5 flex items-center gap-1.5 text-[11px] text-slate-500 min-w-0">
+              <span id="context-topic" class="truncate max-w-[140px] sm:max-w-[260px]"><%= selectedTopic ? selectedTopic.nama : 'Semua Topik' %></span>
+              <span class="text-slate-300">&bull;</span>
+              <span id="context-level" class="shrink-0 px-1.5 py-px rounded bg-brand-50 text-brand-700 font-semibold"><%= selectedLevel %></span>
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1 shrink-0">
+          <a href="/riwayat" title="Lihat riwayat belajar" class="px-2.5 py-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 text-xs font-medium transition flex items-center gap-1.5">
+            <iconify-icon icon="lucide:history" width="14" height="14"></iconify-icon>
+            <span class="hidden sm:inline">Riwayat</span>
+          </a>
+          <button
+            type="button"
+            id="btn-new-session"
+            title="Mulai sesi belajar baru"
+            class="px-2.5 py-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 text-xs font-medium transition flex items-center gap-1.5"
+          >
+            <iconify-icon icon="lucide:plus-square" width="14" height="14"></iconify-icon>
+            <span class="hidden sm:inline">Sesi Baru</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Area Pesan Chat -->
+      <div id="chat-messages" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4" aria-live="polite">
+        <div class="flex gap-3" data-welcome>
+          <div class="h-8 w-8 shrink-0 rounded-full bg-white border border-slate-200 flex items-center justify-center">
+            <img src="/images/tutora-owl.png" alt="Tutora" class="h-5 w-auto">
+          </div>
+          <div class="max-w-[85%] rounded-2xl rounded-tl-sm bg-slate-100 px-4 py-3 text-sm text-slate-800 leading-relaxed">
+            Halo! Saya <strong>Tutora AI Tutor</strong>. Pilih topik dan tingkat pemahamanmu di panel samping, lalu tanyakan apa saja seputar materinya. Setelah saya menjawab, kamu bisa minta <em>penjelasan lebih sederhana</em>, <em>contoh</em>, atau <em>uji pemahamanmu</em>.
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulir Input Chat -->
+      <form id="chat-form" class="border-t border-slate-200 p-3 sm:p-4 bg-white" novalidate>
+        <div class="flex items-end gap-2">
+          <label for="chat-input" class="sr-only">Pertanyaan Anda</label>
+          <textarea
+            id="chat-input"
+            rows="1"
+            maxlength="1000"
+            placeholder="Tulis pertanyaanmu... (Enter kirim, Shift+Enter baris baru)"
+            aria-describedby="input-warning"
+            class="flex-1 resize-none overflow-y-hidden rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition max-h-36 leading-relaxed"
+          ></textarea>
+          <button
+            id="chat-send"
+            type="submit"
+            class="h-10 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-medium text-sm transition flex items-center justify-center gap-1.5 shrink-0"
+          >
+            <iconify-icon icon="lucide:send" width="15" height="15"></iconify-icon>
+            <span class="hidden sm:inline">Kirim</span>
+          </button>
+        </div>
+        <!-- Peringatan input kosong (US-02) -->
+        <p id="input-warning" class="hidden mt-2 text-xs text-rose-600 flex items-center gap-1" role="alert"></p>
+        <div class="mt-2 flex items-start justify-between gap-3 text-[11px] text-slate-400 px-0.5">
+          <span class="flex items-start gap-1 leading-snug">
+            <iconify-icon icon="lucide:shield-alert" width="12" height="12" class="mt-px shrink-0"></iconify-icon>
+            <span>Jawaban AI bisa keliru, verifikasi dengan materi kuliah atau dosen. Jangan masukkan data pribadi.</span>
+          </span>
+          <span class="shrink-0"><span id="char-count">0</span>/1000</span>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <!-- ================================================================== -->
+  <!-- Mode Fokus Uji Pemahamanku (F-03): layar penuh, percakapan disembunyikan -->
+  <!-- ================================================================== -->
+  <div id="quiz-modal" class="hidden fixed inset-0 z-[55] bg-slate-50 flex flex-col opacity-0 transition-opacity duration-200" role="dialog" aria-modal="true" aria-labelledby="quiz-title">
+    <header class="bg-white border-b border-slate-200 shrink-0">
+      <div class="max-w-2xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="h-9 w-9 shrink-0 rounded-xl bg-brand-600 text-white flex items-center justify-center">
+            <iconify-icon icon="lucide:clipboard-check" width="18" height="18"></iconify-icon>
+          </span>
+          <div class="min-w-0">
+            <p id="quiz-title" class="font-bold text-slate-900 text-sm leading-tight">Uji Pemahamanku</p>
+            <p id="quiz-subtitle" class="text-[11px] text-slate-500 truncate"></p>
+          </div>
+        </div>
+        <button type="button" id="quiz-close" title="Tutup uji pemahaman" class="h-9 w-9 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center transition">
+          <iconify-icon icon="lucide:x" width="18" height="18"></iconify-icon>
+          <span class="sr-only">Tutup</span>
+        </button>
+      </div>
+      <div class="h-1 bg-slate-100" aria-hidden="true">
+        <div id="quiz-progress" class="h-full bg-brand-600 transition-all duration-300" style="width:0%"></div>
+      </div>
+    </header>
+
+    <div class="flex-1 overflow-y-auto">
+      <div class="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+
+        <!-- Memuat (menyusun soal / memeriksa jawaban) -->
+        <section data-quiz-view="loading" class="py-16 flex flex-col items-center text-center" aria-live="polite">
+          <div class="h-14 w-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center mb-4">
+            <img src="/images/tutora-owl.png" alt="" class="h-8 w-auto animate-bounce">
+          </div>
+          <p id="quiz-loading-text" class="text-sm font-semibold text-slate-700">Menyusun 3 pertanyaan...</p>
+          <p class="text-xs text-slate-400 mt-1">Biasanya hanya beberapa detik.</p>
+        </section>
+
+        <!-- Error (US-09) -->
+        <section data-quiz-view="error" class="hidden py-12 flex flex-col items-center text-center" role="alert">
+          <div class="h-14 w-14 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mb-4">
+            <iconify-icon icon="lucide:alert-triangle" width="26" height="26"></iconify-icon>
+          </div>
+          <p class="text-sm font-bold text-slate-900">Uji pemahaman belum bisa dilanjutkan</p>
+          <p id="quiz-error-text" class="text-sm text-slate-500 mt-1 max-w-md"></p>
+          <div class="mt-6 flex flex-wrap justify-center gap-2">
+            <button type="button" id="quiz-error-back" class="hidden px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm font-semibold transition">Ubah Jawaban</button>
+            <button type="button" id="quiz-retry" class="px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold shadow-sm transition flex items-center gap-1.5">
+              <iconify-icon icon="lucide:refresh-cw" width="15" height="15"></iconify-icon><span>Coba Lagi</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Soal satu per satu -->
+        <section data-quiz-view="question" class="hidden">
+          <div class="flex items-center justify-between gap-3">
+            <p id="quiz-step" class="text-xs font-bold uppercase tracking-wider text-brand-700">Pertanyaan 1 dari 3</p>
+            <div id="quiz-dots" class="flex gap-1.5" aria-hidden="true"></div>
+          </div>
+          <h2 id="quiz-question" class="mt-3 text-xl sm:text-2xl font-bold text-slate-900 leading-snug"></h2>
+
+          <label for="quiz-answer" class="block mt-6 text-xs font-semibold text-slate-700 mb-1.5">Jawabanmu</label>
+          <textarea
+            id="quiz-answer"
+            rows="6"
+            maxlength="600"
+            placeholder="Jelaskan dengan kata-katamu sendiri..."
+            class="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 leading-relaxed focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
+          ></textarea>
+          <div class="mt-1.5 flex items-start justify-between gap-3 text-[11px]">
+            <span id="quiz-warning" class="hidden text-rose-600" role="alert"></span>
+            <span class="ml-auto text-slate-400 shrink-0"><span id="quiz-count">0</span>/600</span>
+          </div>
+
+          <div class="mt-6 flex items-center justify-between gap-3">
+            <button type="button" id="quiz-prev" class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm font-semibold transition flex items-center gap-1.5 disabled:opacity-0 disabled:pointer-events-none">
+              <iconify-icon icon="lucide:arrow-left" width="15" height="15"></iconify-icon><span>Sebelumnya</span>
+            </button>
+            <button type="button" id="quiz-next" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold shadow-sm transition flex items-center gap-1.5">
+              <span>Berikutnya</span><iconify-icon icon="lucide:arrow-right" width="15" height="15"></iconify-icon>
+            </button>
+          </div>
+
+          <p class="mt-8 flex items-start gap-2 text-[11px] text-slate-400 leading-relaxed">
+            <iconify-icon icon="lucide:eye-off" width="13" height="13" class="mt-px shrink-0"></iconify-icon>
+            <span>Percakapan disembunyikan selama uji agar kamu benar-benar mengandalkan pemahamanmu sendiri. Tekan Ctrl+Enter untuk lanjut.</span>
+          </p>
+        </section>
+
+        <!-- Hasil -->
+        <section data-quiz-view="result" class="hidden">
+          <div id="quiz-result"></div>
+          <div class="mt-6 flex justify-end">
+            <button type="button" id="quiz-done" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold shadow-sm transition flex items-center gap-1.5">
+              <iconify-icon icon="lucide:message-square" width="15" height="15"></iconify-icon><span>Kembali ke Chat</span>
+            </button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+<%- include('partials/confirm-modal') %>
+  <script src="/js/markdown.js"></script>
+  <script src="/js/storage.js"></script>
+  <script src="/js/quiz-card.js"></script>
+  <script src="/js/assistant.js"></script>
+
+<%- include('partials/footer') %>
